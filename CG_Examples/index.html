@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+			
+			canvas { display: block; background: black;}
+		</style>
+	</head>
+	<body>
+		<canvas id = "myCanvas"></canvas>
+		<script src="three.js"></script>
+		<script src="GLTFLoader.js"></script>
+		<script>
+			// Our Javascript will go here.
+		
+
+
+			var mouse = new THREE.Vector2();
+
+
+			var renderMACHINE = new THREE.WebGLRenderer({canvas: document.getElementById('myCanvas'), antialias: true});
+			renderMACHINE.setClearColor(0x00ff00);
+			renderMACHINE.setPixelRatio(window.devicePixelRatio);
+			renderMACHINE.setSize(window.innerWidth, window.innerHeight);
+			var camera = new THREE.PerspectiveCamera(35, window.innerWidth/ window.innerHeight, 0.1, 3000);
+			var scene = new THREE.Scene();
+
+
+			var light = new THREE.AmbientLight(0x00ff00, 0.5);
+			scene.add(light);
+			var light1 = new THREE.PointLight(0xf7eeee, 0.5);
+			scene.add(light1);
+			light1.position.set(35, window.innerWidth/ window.innerHeight, 5);
+			console.log("Point Light position", light1.position.x, light1.position.y, light1.position.z);
+			
+			var geometry = new THREE.ConeGeometry(200, 500, 100);
+			var geometry2 = new THREE.BoxGeometry(200, 500, 100);
+			//var geometry2 = new THREE.BoxBufferGeometry( 1, 1, 1 );
+			//var material = new THREE.MeshLambertMaterial({color: 0xF3FFE2});
+
+
+			var material2 = new THREE.MeshLambertMaterial( {color: 0xf2f2f2} );
+			var mesh = new THREE.Mesh(geometry, material2);
+			mesh.position.set(0, 0, -1000);
+			scene.add(mesh);
+			var mesh1 = new THREE.Mesh(geometry2, material2);
+			mesh1.position.set(150, 150, -1000);
+			var blueLight = new THREE.PointLight(0x6666ff, 0.5);
+			blueLight.position.set(mesh1.position.x, mesh1.position.y, mesh1.position.z + 100);
+			scene.add(blueLight);
+			scene.add(mesh1);
+			requestAnimationFrame(animate);
+			
+		
+
+
+			function onMouseMove( event ) {
+
+				// calculate mouse position in normalized device coordinates
+				// (-1 to +1) for both components
+
+				mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+				mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+				console.log(mouse.x,mouse.y);
+
+			}
+
+			
+			function animate() {
+			
+			mesh.rotation.y += 0.01;
+			mesh.rotation.z += 0.01;
+			
+			mesh1.rotation.x += 0.01;
+			mesh1.rotation.z += 0.01;
+			renderMACHINE.render(scene, camera);
+			
+			controls.update();
+			requestAnimationFrame(animate);
+
+			blueLight.position.set(mouse.x, mouse.y);
+			//blueLight.rotation.set(mouse.x, mouse.y);
+			}
+
+		window.addEventListener( 'mousemove', onMouseMove, false );
+
+			var loader = new THREE.GLTFLoader();
+
+			// Load a glTF resource
+	loader.load(
+	// resource URL
+	'scene.gltf',
+	// called when the resource is loaded
+	function ( gltf ) {
+
+		scene.add( gltf.scene );
+
+		gltf.animations; // Array<THREE.AnimationClip>
+		gltf.scene; // THREE.Group
+		gltf.scenes; // Array<THREE.Group>
+		gltf.cameras; // Array<THREE.Camera>
+		gltf.asset; // Object
+
+	},
+	// called while loading is progressing
+	function ( xhr ) {
+
+		console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+
+	},
+	// called when loading has errors
+	function ( error ) {
+
+		console.log( 'An error happened' );
+
+	}
+);
+
+		</script>
+	</body>
+</html>
