@@ -59,6 +59,7 @@ function createBox(){
   const geometry = new THREE.BoxBufferGeometry( 120, 120, 120 );
   const material1 = new THREE.MeshStandardMaterial( { color: 0x800080, transparent: true, opacity:0.3 } );
   mesh = new THREE.Mesh( geometry, material1 );
+  mesh.userData = {URL: "https://charity.gofundme.com/muwekmaohlonetribeinc?lang=en-us" };
   scene.add( mesh );
 
 }
@@ -216,6 +217,7 @@ function loadModels() {
    const plantp = new THREE.Vector3( -20, -10, -20 );
    loader.load( 'models/plant/scene.gltf', gltf => onLoad( gltf, plantp, newStandard ), onProgress, onError );
 
+
    const butterflyp = new THREE.Vector3( -20, -10, -20 );
    loader.load( 'models/butterfly/scene.gltf.glb', gltf => onLoad( gltf, butterflyp, newStandard ), onProgress, onError );
 
@@ -232,13 +234,7 @@ document.addEventListener( 'mousedown', onDocumentMouseDown, false );
 
 function onDocumentMouseDown( event ) {
 
-  if ( action !== null ) {
-
-
-    action.stop();
-    action.play();
-
-  }
+      window.open(mesh.userData.URL);
 
 }
 
@@ -341,6 +337,8 @@ function doStuffwithRaycaster() {
 
             intersects[0].object.material.color.set(0xff0000);
 						INTERSECTED = intersects[ 0 ];
+
+
 
 
 					}
