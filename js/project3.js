@@ -9,12 +9,15 @@ let INTERSECTED;
 let interescts;
 let object;
 let name;
+let action;
+let mixer;
+let mixers;
+
 
 
 //add material name here first
 let newMaterial, Standard, newStandard;
 
-const mixers = [];
 const clock = new THREE.Clock();
 
 const raycaster = new THREE.Raycaster();
@@ -34,9 +37,10 @@ function init() {
   createLights();
   createMaterials();
   loadModels();
+  createBox();
   createRenderer();
   createSkybox();
-  createBox();
+
 
   renderer.setAnimationLoop( () => {
 
@@ -53,7 +57,7 @@ function createBox(){
 //  scene.add( mesh2 );
 
   const geometry = new THREE.BoxBufferGeometry( 120, 120, 120 );
-  const material1 = new THREE.MeshStandardMaterial( { color: 0x800080, opacity:1, transparent: true } );
+  const material1 = new THREE.MeshStandardMaterial( { color: 0x800080, transparent: true, opacity:0.3 } );
   mesh = new THREE.Mesh( geometry, material1 );
   scene.add( mesh );
 
@@ -117,7 +121,7 @@ function createMaterials(){
 										roughness: 0.1,
 									  envMap: scene.background,
                     displacementMap: imgTexture,
-                    displacementscale: 0.1,
+                    displacementScale: 0.1,
                     skinning: true
                   //  refractionRatio: 0.95
 
@@ -141,13 +145,17 @@ function loadModels() {
   //  model.position.copy( position );
 
     //animation
-    const animation = gltf.animations[ 0 ];
+/*  const animation = gltf.animations[ 0 ];
 
    const mixer = new THREE.AnimationMixer( model );
    mixers.push( mixer );
 
+   animation.clampWhenFinished = true;
+
   const action = mixer.clipAction( animation );
-  action.play();
+  action.setLoop( THREE.LoopOnce );
+
+  action.play();*/
     //var newMesh = new THREE.MESH()
 
     let object = gltf.scene;
@@ -162,6 +170,11 @@ function loadModels() {
 
     //scene.add( model );
 
+    //other animation
+    mixer = new THREE.AnimationMixer(object);
+    action = mixer.clipAction(gltf.animations[0]);
+    action.setLoop( THREE.LoopOnce );
+
   };
 
   // the loader will report the loading progress to this function
@@ -173,19 +186,61 @@ function loadModels() {
 
   // load the first model. Each model is loaded asynchronously,
   // so don't make any assumption about which one will finish loading first
-  const parrotPosition = new THREE.Vector3( 300, 300, 300 );
-  loader.load( 'models/explsion/scene.gltf', gltf => onLoad( gltf, parrotPosition, newStandard, "MooseMesh"), onProgress, onError );
+  //const aPosition = new THREE.Vector3( 300, 300, 300 );
+  //loader.load( 'models/explsion/scene.gltf', gltf => onLoad( gltf, aPosition, newStandard, "MeshName1"), onProgress, onError );
 
- //const flamingoPosition = new THREE.Vector3( 20, 100, 10 );
- //loader.load( 'models/gun/gunexplode.gltf.glb', gltf => onLoad( gltf, flamingoPosition, newStandard, "GunMesh" ), onProgress, onError );
+//  const bPosition = new THREE.Vector3( -300, -300, -300 );
+//  loader.load( 'models/explsion/scene.gltf', gltf => onLoad( gltf, bPosition, newStandard, "MeshName1"), onProgress, onError );
 
-  //const storkPosition = new THREE.Vector3( 0, -2.5, -10 );
-  //loader.load( 'models/Stork.glb', gltf => onLoad( gltf, storkPosition ), onProgress, onError );
+  const flamingoPosition = new THREE.Vector3( 20, 100, 10 );
+  loader.load( 'models/gun/gun-broken.glb', gltf => onLoad( gltf, flamingoPosition, newStandard, "GunMesh" ), onProgress, onError );
+
+  const storkPosition = new THREE.Vector3( -300, -300, -300 );
+  loader.load( 'models/oilcan/oilcan-broken.glb', gltf => onLoad( gltf, storkPosition, newStandard ), onProgress, onError );
+
+   const cakePosition = new THREE.Vector3( -20, -10, -20 );
+   loader.load( 'models/cake/cake-broken.glb', gltf => onLoad( gltf, cakePosition, newStandard ), onProgress, onError );
+
+   const cagePosition = new THREE.Vector3( -20, -10, -20 );
+   loader.load( 'models/cage/cage-broken.glb', gltf => onLoad( gltf, cagePosition, newStandard ), onProgress, onError );
+
+   const cuffsPosition = new THREE.Vector3( -20, -10, -20 );
+   loader.load( 'models/handcuffs/cuffs.glb', gltf => onLoad( gltf, cuffsPosition, newStandard ), onProgress, onError );
+
+   const gwbust = new THREE.Vector3( -20, -10, -20 );
+   loader.load( 'models/gwbust/gwbust-broken.glb', gltf => onLoad( gltf, gwbust, newStandard ), onProgress, onError );
+
+   const virusp = new THREE.Vector3( -20, -10, -20 );
+   loader.load( 'models/virus/virus.glb', gltf => onLoad( gltf, virusp, newStandard ), onProgress, onError );
+
+   const plantp = new THREE.Vector3( -20, -10, -20 );
+   loader.load( 'models/plant/scene.gltf', gltf => onLoad( gltf, plantp, newStandard ), onProgress, onError );
+
+   const butterflyp = new THREE.Vector3( -20, -10, -20 );
+   loader.load( 'models/butterfly/scene.gltf.glb', gltf => onLoad( gltf, butterflyp, newStandard ), onProgress, onError );
+
+
+
+
+
+
+
 
 }
 
+document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+
+function onDocumentMouseDown( event ) {
+
+  if ( action !== null ) {
 
 
+    action.stop();
+    action.play();
+
+  }
+
+}
 
 function createRenderer() {
 
@@ -209,12 +264,23 @@ function createRenderer() {
 function update() {
 
 //play animation
-const delta = clock.getDelta();
-for ( const mixer of mixers ) {
+//const delta = clock.getDelta();
+//for ( const mixer of mixers ) {
 
-mixer.update( delta );
+//mixer.update( delta );
+
+
+
 }//play animation
 
+var animate = function () {
+  requestAnimationFrame( animate );
+
+  var delta = clock.getDelta();
+
+  if (mixer !== null) {
+    mixer.update(delta);
+  };
 
 
 
@@ -222,9 +288,9 @@ mixer.update( delta );
 
 //GUI Controls----------------------------//
 var guiControls = new function(){
-  this.opacity = 0.1;
+  this.opacity = 0.5;
 
-}
+};
 
 var datGUI = new dat.GUI();
 datGUI.add(guiControls, 'opacity', 0, 1);
@@ -233,8 +299,6 @@ function render() {
 
   //getTheObject();
   object = scene.getObjectByName("MeshName1", true); //not most efficent way
-  object = scene.getObjectByName("GunMesh", true);
-  object = scene.getObjectByName("MooseMesh", true);
 
 
   //  if(object){
@@ -243,15 +307,17 @@ function render() {
 
     //  console.log(object);
     //call the raycaster
+
+
+  console.log(mesh.material);
+  console.log(guiControls.opacity);
+
+  mesh.material.opacity.value += guiControls.opactiy;
+
   doStuffwithRaycaster();
-
-  console.log(mesh);
-
-  mesh.opacity -= guiControls.opactiy;
-
-
 //  requestAnimationFrame(render);
 
+    update();
   renderer.render( scene, camera );
 
 }
@@ -275,7 +341,7 @@ function doStuffwithRaycaster() {
 
             intersects[0].object.material.color.set(0xff0000);
 						INTERSECTED = intersects[ 0 ];
-            update();
+
 
 					}
 
@@ -312,4 +378,6 @@ function onWindowResize() {
 
 window.addEventListener( 'resize', onWindowResize );
 
+
 init();
+animate();
