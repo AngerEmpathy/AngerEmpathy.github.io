@@ -67,7 +67,7 @@ function createBox(){
 function createSkybox(){
 
   scene.background = new THREE.CubeTextureLoader()
-					.setPath( 'js/three.js-master/examples/textures/cube/projskybox/' )
+					.setPath( 'AngerEmpathy.github.io/js/three.js-master/examples/textures/cube/projskybox/' )
 					.load( [ 'blm_px.jpg', 'blm_nx.jpg', 'blm_py.jpg', 'blm_ny.jpg', 'blm_pz.jpg', 'blm_nz.jpg' ] );
 
 }
